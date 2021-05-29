@@ -1,10 +1,8 @@
 source "https://rubygems.org"
 
 ruby "3.0.0"
-gem "sinatra", ">=1.4.7"
+gem "sinatra"
 gem "sinatra-contrib"
 gem "erubis"
-gem "dotenv"
-group :production do
-  gem "puma"
-end
+gem "rack-test"
+gem "minitest"
