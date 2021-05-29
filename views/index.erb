@@ -3,7 +3,9 @@
   <body>
   <% @files.each do |file| %>
     <ul>
-      <li><%= file %></li>
+      <li>
+        <a href='/<%= file %>'><%= file %></a>
+      </li>
     </ul>
   <% end %>
   </body>
