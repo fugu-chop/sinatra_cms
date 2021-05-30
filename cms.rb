@@ -41,6 +41,16 @@ def data_path
   File.expand_path('data', __dir__)
 end
 
+def empty_doc_name?
+  params[:new_doc].empty?
+end
+
+def validate_file_extension(file_name)
+  file_name.strip!
+  file_name += '.txt' if File.extname(file_name).empty?
+  file_name
+end
+
 get '/' do
   # The join method on file objects appends a '/' symbol between arguments (OS dependent)
   pattern = File.join(data_path, '*')
@@ -77,5 +87,21 @@ post '/:file/edit' do
   File.write(file_path, params[:content])
 
   session[:message] = "#{file_name} has been updated."
+  redirect '/'
+end
+
+post '/new' do
+  if empty_doc_name?
+    session[:message] = 'A name is required'
+    status 422
+    return erb(:new)
+  end
+
+  file_name = validate_file_extension(params[:new_doc])
+  file_path = File.join(data_path, file_name)
+
+  File.write(file_path, '')
+
+  session[:message] = "#{file_name} was created." 
   redirect '/'
 end
