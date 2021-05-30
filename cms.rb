@@ -102,7 +102,7 @@ post '/new' do
 
   File.write(file_path, '')
 
-  session[:message] = "#{file_name} was created." 
+  session[:message] = "#{file_name} was created."
   redirect '/'
 end
 

@@ -113,42 +113,42 @@ class AppTest < Minitest::Test
   end
 
   def test_view_new_document_form
-    get "/new"
+    get '/new'
 
     assert_equal(200, last_response.status)
-    assert_includes(last_response.body, "<input")
+    assert_includes(last_response.body, '<input')
     # The q( syntax is necessary as single quotes don't play well with tags
-    assert_includes(last_response.body, %q(<button type='submit'))
+    assert_includes(last_response.body, "<button type='submit'")
   end
 
   def test_create_new_document
-    post "/new", new_doc: "test.txt"
+    post '/new', new_doc: 'test.txt'
     assert_equal(302, last_response.status)
 
-    get last_response["Location"]
-    assert_includes(last_response.body, "test.txt was created")
+    get last_response['Location']
+    assert_includes(last_response.body, 'test.txt was created')
 
-    get "/"
-    assert_includes(last_response.body, "test.txt")
+    get '/'
+    assert_includes(last_response.body, 'test.txt')
   end
 
   def test_create_new_document_without_filename
-    post "/new", new_doc: ""
+    post '/new', new_doc: ''
     assert_equal(422, last_response.status)
-    assert_includes(last_response.body, "A name is required")
+    assert_includes(last_response.body, 'A name is required')
   end
 
   def test_delete_document
     create_document('test.txt')
     post '/test.txt/delete'
-    
+
     assert_equal(302, last_response.status)
 
-    get last_response["Location"]
-    assert_includes last_response.body, "test.txt was deleted"
+    get last_response['Location']
+    assert_includes last_response.body, 'test.txt was deleted'
 
     get '/'
     assert_equal(200, last_response.status)
-    refute_includes(last_response.body, "test.txt")
+    refute_includes(last_response.body, 'test.txt')
   end
 end
