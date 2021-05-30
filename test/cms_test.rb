@@ -121,7 +121,6 @@ class AppTest < Minitest::Test
     assert_includes(last_response.body, %q(<button type='submit'))
   end
 
-
   def test_create_new_document
     post "/new", new_doc: "test.txt"
     assert_equal(302, last_response.status)
@@ -137,5 +136,19 @@ class AppTest < Minitest::Test
     post "/new", new_doc: ""
     assert_equal(422, last_response.status)
     assert_includes(last_response.body, "A name is required")
+  end
+
+  def test_delete_document
+    create_document('test.txt')
+    post '/test.txt/delete'
+    
+    assert_equal(302, last_response.status)
+
+    get last_response["Location"]
+    assert_includes last_response.body, "test.txt was deleted"
+
+    get '/'
+    assert_equal(200, last_response.status)
+    refute_includes(last_response.body, "test.txt")
   end
 end
