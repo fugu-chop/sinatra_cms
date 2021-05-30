@@ -34,18 +34,24 @@ def load_txt(content)
   content
 end
 
-root = File.expand_path(__dir__)
+def data_path
+  return File.expand_path("../test/data", __FILE__) if ENV["RACK_ENV"] == "test"
+  File.expand_path("../data", __FILE__)
+end
 
 get '/' do
-  @files = Dir.glob("#{root}/data/*").map do |path|
+  # The join method on file objects appends a '/' symbol between arguments (OS dependent)
+  pattern = File.join(data_path, '*')
+  @files = Dir.glob(pattern).map do |path|
     File.basename(path)
   end
   erb(:index)
 end
 
 get '/:file' do
+  file_path = File.join(data_path, params[:file])
   file_name = params[:file]
-  return load_file_content("data/#{file_name}") if File.exist?("data/#{file_name}")
+  return load_file_content(file_path) if File.exist?(file_path)
 
   session[:message] = "#{file_name} does not exist"
   redirect "/"
@@ -53,7 +59,7 @@ end
 
 get '/:file/edit' do
   file_name = params[:file]
-  file_path = "#{root}/data/#{file_name}"
+  file_path = File.join(data_path, file_name)
   @content = File.read(file_path)
 
   erb(:edit)
@@ -61,7 +67,7 @@ end
 
 post '/:file/edit' do
   file_name = params[:file]
-  file_path = "#{root}/data/#{file_name}"
+  file_path = File.join(data_path, file_name)
   File.write(file_path , params[:content])
 
   session[:message] = "#{file_name} has been updated."
