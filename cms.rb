@@ -105,3 +105,12 @@ post '/new' do
   session[:message] = "#{file_name} was created." 
   redirect '/'
 end
+
+post '/:file/delete' do
+  file_name = params[:file]
+  file_path = File.join(data_path, file_name)
+  File.delete(file_path)
+
+  session[:message] = "#{file_name} was deleted"
+  redirect '/'
+end
