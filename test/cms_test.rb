@@ -55,4 +55,12 @@ class AppTest < Minitest::Test
     assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
     assert_includes(last_response.body, "<h1>Ruby is...</h1>")
   end
+
+  def test_edit_view
+    get "/history.txt/edit"
+
+    assert_equal(200, last_response.status)
+    assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
+    assert_includes(last_response.body, "1993 - Yukihiro")
+  end
 end
