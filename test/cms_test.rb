@@ -44,7 +44,7 @@ class AppTest < Minitest::Test
     assert_equal(200, last_response.status)
     assert_includes(last_response.body, "#{random_file} does not exist")
 
-    get "/" # Reload the page
+    get "/"
     refute_includes(last_response.body, "#{random_file} does not exist")
   end
 
@@ -62,5 +62,23 @@ class AppTest < Minitest::Test
     assert_equal(200, last_response.status)
     assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
     assert_includes(last_response.body, "1993 - Yukihiro")
+    assert_includes(last_response.body, "<textarea")
+    assert_includes(last_response.body, %q(<button type="submit"))
+  end
+
+  def test_edit_functionality
+    post "/changes.txt/edit", content: "new content"
+
+    # When testing, a redirection executed through Rack::Test will set a 302 regardless of request type
+    # If you redirect in Sinatra from a POST route, the response will return a 303 status code
+    # If you redirect in Sinatra from a GET route, then the response will return a 302
+    assert_equal(302, last_response.status)
+
+    get last_response["Location"]
+    assert_includes(last_response.body, "changes.txt has been updated")
+
+    get "/changes.txt"
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, "new content")
   end
 end
