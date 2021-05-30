@@ -1,16 +1,10 @@
-<!doctype html>
-<html lang="en-US">
-  <body>
-  <% if session[:message] %>
-    <p><%= session.delete(:message) %></p>
-  <% end %>
-  <% @files.each do |file| %>
-    <ul>
-      <li>
-        <a href='/<%= file %>'><%= file %></a>
-        <a href="/<%= file %>/edit">edit</a>
-      </li>
-    </ul>
-  <% end %>
-  </body>
-</html>
+<a href='/new'>Create new document</a>
+
+<% @files.each do |file| %>
+  <ul>
+    <li>
+      <a href='/<%= file %>'><%= file %></a>
+      <a href='/<%= file %>/edit'>edit</a>
+    </li>
+  </ul>
+<% end %>

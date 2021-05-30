@@ -4,13 +4,13 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'tilt/erubis'
 require 'dotenv/load'
-require "redcarpet"
+require 'redcarpet'
 
 Dotenv.load
 
 # File.expand_path("..", __FILE__) represents the name of the file that contains the reference to __FILE__.
 # E.g. if your file is named myprog.rb and you run it with the ruby myprog.rb, then __FILE__ is myprog.rb.
-# When we combine this value with .. (the parent directory) in the call to expand_path, 
+# When we combine this value with .. (the parent directory) in the call to expand_path,
 # we get the absolute path name of the directory where our program lives. Rubocop prefers File.expand_path(__dir__).
 configure do
   enable(:sessions)
@@ -25,18 +25,20 @@ end
 def load_file_content(path)
   content = File.read(path)
   return load_txt(content) if File.extname(path) == '.txt'
-  render_markdown(content) if File.extname(path) == '.md'
+
+  erb(render_markdown(content)) if File.extname(path) == '.md'
 end
 
 def load_txt(content)
   # Headers is a hash that's available through Sinatra, just like params
-  headers["Content-Type"] = "text/plain"
+  headers['Content-Type'] = 'text/plain'
   content
 end
 
 def data_path
-  return File.expand_path("../test/data", __FILE__) if ENV["RACK_ENV"] == "test"
-  File.expand_path("../data", __FILE__)
+  return File.expand_path('test/data', __dir__) if ENV['RACK_ENV'] == 'test'
+
+  File.expand_path('data', __dir__)
 end
 
 get '/' do
@@ -48,13 +50,17 @@ get '/' do
   erb(:index)
 end
 
+get '/new' do
+  erb(:new)
+end
+
 get '/:file' do
   file_path = File.join(data_path, params[:file])
   file_name = params[:file]
   return load_file_content(file_path) if File.exist?(file_path)
 
   session[:message] = "#{file_name} does not exist"
-  redirect "/"
+  redirect '/'
 end
 
 get '/:file/edit' do
@@ -68,7 +74,7 @@ end
 post '/:file/edit' do
   file_name = params[:file]
   file_path = File.join(data_path, file_name)
-  File.write(file_path , params[:content])
+  File.write(file_path, params[:content])
 
   session[:message] = "#{file_name} has been updated."
   redirect '/'
