@@ -29,6 +29,7 @@ def load_file_content(path)
 end
 
 def load_txt(content)
+  # Headers is a hash that's available through Sinatra, just like params
   headers["Content-Type"] = "text/plain"
   content
 end
@@ -44,17 +45,25 @@ end
 
 get '/:file' do
   file_name = params[:file]
-  # Headers is a hash that's available through Sinatra, just like params
   return load_file_content("data/#{file_name}") if File.exist?("data/#{file_name}")
 
-  session[:error] = "#{file_name} does not exist"
+  session[:message] = "#{file_name} does not exist"
   redirect "/"
 end
 
-get "/:file/edit" do
+get '/:file/edit' do
   file_name = params[:file]
   file_path = "#{root}/data/#{file_name}"
   @content = File.read(file_path)
 
   erb(:edit)
+end
+
+post '/:file/edit' do
+  file_name = params[:file]
+  file_path = "#{root}/data/#{file_name}"
+  File.write(file_path , params[:content])
+
+  session[:message] = "#{file_name} has been updated."
+  redirect '/'
 end

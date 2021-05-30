@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en-US">
   <body>
-  <% if session[:error] %>
-    <p><%= session.delete(:error) %></p>
+  <% if session[:message] %>
+    <p><%= session.delete(:message) %></p>
   <% end %>
   <% @files.each do |file| %>
     <ul>

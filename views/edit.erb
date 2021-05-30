@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-US">
   <body>
-    <form method="post" action="/<%= params[:file] %>">
+    <form method="post" action="/<%= params[:file] %>/edit">
       <label for="content">Edit content of <%= params[:file] %>:</label>
       <div>
         <textarea name="content" id="content" rows="20" cols="100"><%= @content %></textarea>
