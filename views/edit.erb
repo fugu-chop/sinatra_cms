@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en-US">
+  <body>
+    <form method="post" action="/<%= params[:file] %>">
+      <label for="content">Edit content of <%= params[:file] %>:</label>
+      <div>
+        <textarea name="content" id="content" rows="20" cols="100"><%= @content %></textarea>
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+  </body>
+</html>

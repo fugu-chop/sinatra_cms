@@ -24,13 +24,13 @@ end
 
 def load_file_content(path)
   content = File.read(path)
-  case File.extname(path)
-  when ".txt"
-    headers["Content-Type"] = "text/plain"
-    content
-  when ".md"
-    render_markdown(content)
-  end
+  return load_txt(content) if File.extname(path) == '.txt'
+  render_markdown(content) if File.extname(path) == '.md'
+end
+
+def load_txt(content)
+  headers["Content-Type"] = "text/plain"
+  content
 end
 
 root = File.expand_path(__dir__)
@@ -45,8 +45,16 @@ end
 get '/:file' do
   file_name = params[:file]
   # Headers is a hash that's available through Sinatra, just like params
-  return load_file_content("data/#{file_name}") if File.exists?("data/#{file_name}")
+  return load_file_content("data/#{file_name}") if File.exist?("data/#{file_name}")
 
   session[:error] = "#{file_name} does not exist"
   redirect "/"
+end
+
+get "/:file/edit" do
+  file_name = params[:file]
+  file_path = "#{root}/data/#{file_name}"
+  @content = File.read(file_path)
+
+  erb(:edit)
 end
