@@ -1,0 +1,3 @@
+# Ruby is...
+a _dynamic_, __open source__ programming language with a focus on simplicity and productivity.
+It has an elegant syntax that is natural to read and easy to write.

@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en-US">
   <body>
+  <% if session[:error] %>
+    <p><%= session.delete(:error) %></p>
+  <% end %>
   <% @files.each do |file| %>
     <ul>
       <li>
