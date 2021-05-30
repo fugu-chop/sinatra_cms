@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    dotenv (2.7.6)
     erubis (2.7.0)
     minitest (5.14.4)
     multi_json (1.15.0)
@@ -11,6 +12,7 @@ GEM
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
+    redcarpet (3.5.1)
     ruby2_keywords (0.0.4)
     sinatra (2.1.0)
       mustermann (~> 1.0)
@@ -29,9 +31,11 @@ PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
+  dotenv
   erubis
   minitest
   rack-test
+  redcarpet
   sinatra
   sinatra-contrib
 
