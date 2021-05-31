@@ -5,9 +5,16 @@
     <li>
       <a href='/<%= file %>'><%= file %></a>
       <a href='/<%= file %>/edit'>edit</a>
-      <form method='post' action='/<%= file %>/delete'>
+      <form class="inline" method='post' action='/<%= file %>/delete'>
         <button type='submit'>delete</button>
       </form>
     </li>
   </ul>
 <% end %>
+
+<form method='post' action='/users/logout'>
+  <p class="user-status">
+    Signed in as <%= session[:username] %>.
+    <button type='submit'>Sign Out</button>
+  </p>
+</form>

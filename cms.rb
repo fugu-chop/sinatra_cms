@@ -51,13 +51,45 @@ def validate_file_extension(file_name)
   file_name
 end
 
+def valid_login?(username, password)
+  username == ENV['USERNAME'] && password == ENV['PASSWORD']
+end
+
 get '/' do
+  return redirect '/users/login' unless session[:login] == 'success'
+
   # The join method on file objects appends a '/' symbol between arguments (OS dependent)
   pattern = File.join(data_path, '*')
   @files = Dir.glob(pattern).map do |path|
     File.basename(path)
   end
   erb(:index)
+end
+
+get '/users/login' do
+  erb(:login)
+end
+
+post '/users/login' do
+  username = params[:username] 
+  password = params[:password]
+  if valid_login?(username, password)
+    session[:username] = params[:username]
+    session[:login] = 'success'
+    session[:message] = 'Welcome!'
+    return redirect '/'
+  end
+
+  session[:message] = 'Invalid Credentials'
+  status 422
+  erb(:login)
+end
+
+post '/users/logout' do
+  session.delete(:login)
+  session[:username] = nil
+  session[:message] = 'You have been signed out.'
+  redirect '/'
 end
 
 get '/new' do
@@ -114,3 +146,4 @@ post '/:file/delete' do
   session[:message] = "#{file_name} was deleted"
   redirect '/'
 end
+
