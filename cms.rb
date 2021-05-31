@@ -56,7 +56,6 @@ def valid_login?(username, password)
 end
 
 get '/' do
-  return redirect '/users/login' unless session[:login] == 'success'
 
   # The join method on file objects appends a '/' symbol between arguments (OS dependent)
   pattern = File.join(data_path, '*')
