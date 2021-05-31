@@ -145,10 +145,48 @@ class AppTest < Minitest::Test
     assert_equal(302, last_response.status)
 
     get last_response['Location']
-    assert_includes last_response.body, 'test.txt was deleted'
+    assert_includes(last_response.body, 'test.txt was deleted')
 
     get '/'
     assert_equal(200, last_response.status)
     refute_includes(last_response.body, 'test.txt')
+  end
+
+  def test_login_page
+    get '/users/login'
+
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, 'Username')
+    assert_includes(last_response.body, %q(<input name='password'))
+  end
+
+  def test_login_success
+    post '/users/login', username: 'admin', password: 'secret'
+    
+    assert_equal(302, last_response.status)
+
+    # Use this when you need a logic based redirect
+    get last_response["Location"]
+
+    assert_includes(last_response.body, 'Welcome')
+    assert_includes(last_response.body, 'Signed in as admin')
+  end
+
+  def test_login_failure
+    post '/users/login', username: 'admIn', password: 'secret'
+    
+    assert_equal(422, last_response.status)
+    assert_includes(last_response.body, 'Invalid Credentials')
+  end
+
+  def test_signout
+    post '/users/logout'
+
+    assert_equal(302, last_response.status)
+
+    get last_response["Location"]
+
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, 'Sign In')
   end
 end
