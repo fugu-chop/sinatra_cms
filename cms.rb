@@ -13,6 +13,7 @@ Dotenv.load
 # When we combine this value with .. (the parent directory) in the call to expand_path,
 # we get the absolute path name of the directory where our program lives. Rubocop prefers File.expand_path(__dir__).
 configure do
+  # This enables use of the session hash
   enable(:sessions)
   set(:session_secret, ENV['SECRET'])
 end
@@ -38,6 +39,13 @@ end
 def data_path
   return File.expand_path('test/data', __dir__) if ENV['RACK_ENV'] == 'test'
 
+  # expand_path lets you determine the absolute path name that corresponds to a relative pathname. 
+  # This is useful when we might be running the program from a different directory to where it's located
+  # Instead of __dir__, we could have used __FILE__, which represents the name of the file that contains the reference to __FILE__.
+  # if your file is name myprog.rb and you run it with the ruby myprog.rb, then __FILE__ is myprog.rb. 
+  # If we combine this value with '..' in the call to expand_path, we get the absolute path name of the directory where our program lives. 
+  # For instance, if myprog.rb is in the /Users/me/project directory, then File.expand_path("..", __FILE__) returns /Users/me/project. 
+  # This value lets us access other files in our project directory without having to use relative path names.
   File.expand_path('data', __dir__)
 end
 
@@ -76,7 +84,7 @@ post '/users/login' do
     session[:username] = params[:username]
     session[:login] = 'success'
     session[:message] = 'Welcome!'
-    return redirect '/'
+    redirect '/'
   end
 
   session[:message] = 'Invalid Credentials'
