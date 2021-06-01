@@ -8,10 +8,6 @@ require 'redcarpet'
 
 Dotenv.load
 
-# File.expand_path("..", __FILE__) represents the name of the file that contains the reference to __FILE__.
-# E.g. if your file is named myprog.rb and you run it with the ruby myprog.rb, then __FILE__ is myprog.rb.
-# When we combine this value with .. (the parent directory) in the call to expand_path,
-# we get the absolute path name of the directory where our program lives. Rubocop prefers File.expand_path(__dir__).
 configure do
   # This enables use of the session hash
   enable(:sessions)
@@ -38,14 +34,6 @@ end
 
 def data_path
   return File.expand_path('test/data', __dir__) if ENV['RACK_ENV'] == 'test'
-
-  # expand_path lets you determine the absolute path name that corresponds to a relative pathname. 
-  # This is useful when we might be running the program from a different directory to where it's located
-  # Instead of __dir__, we could have used __FILE__, which represents the name of the file that contains the reference to __FILE__.
-  # if your file is name myprog.rb and you run it with the ruby myprog.rb, then __FILE__ is myprog.rb. 
-  # If we combine this value with '..' in the call to expand_path, we get the absolute path name of the directory where our program lives. 
-  # For instance, if myprog.rb is in the /Users/me/project directory, then File.expand_path("..", __FILE__) returns /Users/me/project. 
-  # This value lets us access other files in our project directory without having to use relative path names.
   File.expand_path('data', __dir__)
 end
 
@@ -63,8 +51,12 @@ def valid_login?(username, password)
   username == ENV['USERNAME'] && password == ENV['PASSWORD']
 end
 
-get '/' do
+def redirect_sign_in
+  session[:message] = 'You must be signed in to do that.'
+  redirect '/users/login'
+end
 
+get '/' do
   # The join method on file objects appends a '/' symbol between arguments (OS dependent)
   pattern = File.join(data_path, '*')
   @files = Dir.glob(pattern).map do |path|
@@ -78,9 +70,7 @@ get '/users/login' do
 end
 
 post '/users/login' do
-  username = params[:username] 
-  password = params[:password]
-  if valid_login?(username, password)
+  if valid_login?(params[:username], params[:password])
     session[:username] = params[:username]
     session[:login] = 'success'
     session[:message] = 'Welcome!'
@@ -100,6 +90,7 @@ post '/users/logout' do
 end
 
 get '/new' do
+  redirect_sign_in unless session[:login]
   erb(:new)
 end
 
@@ -113,6 +104,7 @@ get '/:file' do
 end
 
 get '/:file/edit' do
+  redirect_sign_in unless session[:login]
   file_name = params[:file]
   file_path = File.join(data_path, file_name)
   @content = File.read(file_path)
@@ -121,6 +113,7 @@ get '/:file/edit' do
 end
 
 post '/:file/edit' do
+  redirect_sign_in unless session[:login]
   file_name = params[:file]
   file_path = File.join(data_path, file_name)
   File.write(file_path, params[:content])
@@ -130,6 +123,8 @@ post '/:file/edit' do
 end
 
 post '/new' do
+  redirect_sign_in unless session[:login]
+
   if empty_doc_name?
     session[:message] = 'A name is required'
     status 422
@@ -146,6 +141,8 @@ post '/new' do
 end
 
 post '/:file/delete' do
+  redirect_sign_in unless session[:login]
+
   file_name = params[:file]
   file_path = File.join(data_path, file_name)
   File.delete(file_path)
@@ -153,4 +150,3 @@ post '/:file/delete' do
   session[:message] = "#{file_name} was deleted"
   redirect '/'
 end
-
