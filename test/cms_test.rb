@@ -14,6 +14,10 @@ class AppTest < Minitest::Test
     Sinatra::Application
   end
 
+  def session
+    last_request.env["rack.session"]
+  end
+
   def setup
     # This method is accessible through the require_relative, and defined in the global scope
     FileUtils.mkdir_p(data_path)
@@ -62,13 +66,17 @@ class AppTest < Minitest::Test
     get "/#{random_file}"
 
     assert_equal(302, last_response.status)
+    assert_equal(session[:message], "#{random_file} does not exist")
+    
     # Request the page that the user was redirected to
     get last_response['Location']
+
     assert_equal(200, last_response.status)
-    assert_includes(last_response.body, "#{random_file} does not exist")
+    
 
     get '/'
-    refute_includes(last_response.body, "#{random_file} does not exist")
+
+    refute_equal(session[:message], "#{random_file} does not exist")
   end
 
   def test_markdown
@@ -103,10 +111,8 @@ class AppTest < Minitest::Test
     # If you redirect in Sinatra from a POST route, the response will return a 303 status code
     # If you redirect in Sinatra from a GET route, then the response will return a 302
     assert_equal(302, last_response.status)
-
-    get last_response['Location']
-    assert_includes(last_response.body, 'changes.txt has been updated')
-
+    assert_equal(session[:message], 'changes.txt has been updated.')
+    
     get '/changes.txt'
     assert_equal(200, last_response.status)
     assert_includes(last_response.body, 'new content')
@@ -124,9 +130,7 @@ class AppTest < Minitest::Test
   def test_create_new_document
     post '/new', new_doc: 'test.txt'
     assert_equal(302, last_response.status)
-
-    get last_response['Location']
-    assert_includes(last_response.body, 'test.txt was created')
+    assert_equal(session[:message], 'test.txt was created.')
 
     get '/'
     assert_includes(last_response.body, 'test.txt')
@@ -134,7 +138,9 @@ class AppTest < Minitest::Test
 
   def test_create_new_document_without_filename
     post '/new', new_doc: ''
+
     assert_equal(422, last_response.status)
+    # We can't use session[:message] here as we re-render the page instead of redirect
     assert_includes(last_response.body, 'A name is required')
   end
 
@@ -143,13 +149,11 @@ class AppTest < Minitest::Test
     post '/test.txt/delete'
 
     assert_equal(302, last_response.status)
-
-    get last_response['Location']
-    assert_includes(last_response.body, 'test.txt was deleted')
+    assert_equal(session[:message], 'test.txt was deleted')
 
     get '/'
     assert_equal(200, last_response.status)
-    refute_includes(last_response.body, 'test.txt')
+    refute_equal(session[:message], 'test.txt')
   end
 
   def test_login_page
@@ -164,29 +168,32 @@ class AppTest < Minitest::Test
     post '/users/login', username: 'admin', password: 'secret'
     
     assert_equal(302, last_response.status)
+    assert_equal(session[:message], 'Welcome!')
+    assert_equal(session[:login], 'success')
 
     # Use this when you need a logic based redirect
     get last_response["Location"]
 
-    assert_includes(last_response.body, 'Welcome')
     assert_includes(last_response.body, 'Signed in as admin')
+    assert_equal(session[:username], 'admin')
   end
 
   def test_login_failure
     post '/users/login', username: 'admIn', password: 'secret'
     
     assert_equal(422, last_response.status)
+    assert_nil(session[:username])
     assert_includes(last_response.body, 'Invalid Credentials')
+    
   end
-
+  
   def test_signout
     post '/users/logout'
+    assert_equal('You have been signed out.', session[:message])
 
-    assert_equal(302, last_response.status)
-
-    get last_response["Location"]
-
-    assert_equal(200, last_response.status)
+    get last_response['Location']
+    
+    assert_nil(session[:username])
     assert_includes(last_response.body, 'Sign In')
   end
 end
