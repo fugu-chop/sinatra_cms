@@ -5,6 +5,7 @@ require 'sinatra/reloader'
 require 'tilt/erubis'
 require 'dotenv/load'
 require 'redcarpet'
+require 'yaml'
 
 Dotenv.load
 
@@ -26,6 +27,15 @@ def load_file_content(path)
   erb(render_markdown(content)) if File.extname(path) == '.md'
 end
 
+def load_user_credentials
+  path = if ENV['RACK_ENV'] == 'test'
+           File.expand_path('test/users.yaml', __dir__)
+         else
+           File.expand_path('users.yaml', __dir__)
+         end
+  YAML.load_file(path)
+end
+
 def load_txt(content)
   # Headers is a hash that's available through Sinatra, just like params
   headers['Content-Type'] = 'text/plain'
@@ -34,6 +44,7 @@ end
 
 def data_path
   return File.expand_path('test/data', __dir__) if ENV['RACK_ENV'] == 'test'
+
   File.expand_path('data', __dir__)
 end
 
@@ -48,7 +59,9 @@ def validate_file_extension(file_name)
 end
 
 def valid_login?(username, password)
-  username == ENV['USERNAME'] && password == ENV['PASSWORD']
+  user_data = load_user_credentials
+  username == ENV['USERNAME'] && password == ENV['PASSWORD'] ||
+    user_data.keys.include?(username) && user_data.values.include?(password)
 end
 
 def redirect_sign_in
