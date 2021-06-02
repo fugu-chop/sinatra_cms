@@ -214,7 +214,7 @@ class AppTest < Minitest::Test
     assert_includes(last_response.body, "<input name='password'")
   end
 
-  def test_login_success
+  def test_admin_login_success
     post '/users/login', username: ENV['USERNAME'], password: ENV['PASSWORD']
 
     assert_equal(302, last_response.status)
