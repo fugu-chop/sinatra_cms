@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bcrypt (3.1.16)
     dotenv (2.7.6)
     erubis (2.7.0)
     minitest (5.14.4)
@@ -31,6 +32,7 @@ PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
+  bcrypt
   dotenv
   erubis
   minitest
