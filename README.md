@@ -25,6 +25,17 @@ This project is only intended to run locally in development for the above mentio
 4. Visit `http://localhost:4567` in your web browser
 5. If you need to reset the app (i.e. delete all information), please delete the associated cookie through your browser.
 
+Login credentials include:
+```ruby
+{
+  # This is stored in a .env file
+  admin: 'secret',
+  # These are stored in users.yaml
+  albert: 'blompy',
+  timmy: 'wimmy',
+  wimmish: 'plimmish'
+}
+```
 ### Tests
 Tests are found in the `test/cms_test.rb` file. They can be executed through `bundle exec ruby cms_test.rb`.
 
