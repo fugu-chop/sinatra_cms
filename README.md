@@ -12,7 +12,7 @@ Users are able to:
 - Edit documents (dependent on login status)
 - Delete documents (dependent on login status)
 
-This makes use of layouts to reduce the amount of `erb` duplication across view templates.
+This makes use of layouts to reduce the amount of `erb` duplication across view templates. The `bcrypt` gem was used to encrypt stored passwords.
 
 Note that this project uses the filesystem to persist data, and as a result, it isn't a good fit for Heroku. Applications running on Heroku only have access to an ephemeral filesystem. This means any files that are written by a program will be lost each time the application goes to sleep, is redeployed, or restarts (which typically happens every 24 hours).
 
