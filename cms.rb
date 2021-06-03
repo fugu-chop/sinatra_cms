@@ -6,6 +6,7 @@ require 'tilt/erubis'
 require 'dotenv/load'
 require 'redcarpet'
 require 'yaml'
+require 'bcrypt'
 
 Dotenv.load
 
@@ -60,8 +61,8 @@ end
 
 def valid_login?(username, password)
   user_data = load_user_credentials
-  username == ENV['USERNAME'] && password == ENV['PASSWORD'] ||
-    user_data.keys.include?(username) && user_data.values.include?(password)
+  username == ENV['USERNAME'] && BCrypt::Password.new(ENV['PASSWORD']) == password  ||
+    user_data[username] && BCrypt::Password.new(user_data[username]) == password
 end
 
 def redirect_sign_in
