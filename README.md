@@ -53,3 +53,6 @@ File.expand_path("..", __FILE__)
 If we combine this value with `'..'` in the call to `expand_path`, we get the absolute path name of the directory where our program lives. For instance, if `myprog.rb` is in the `/Users/me/project` directory, then the method call returns `/Users/me/project`. This value lets us access other files in our project directory __without__ having to use _relative_ path names.
 
 ### Challenges
+This was my first experience writing such a comprehensive series of tests for a larger application. Getting good coverage was pretty tough, as I'm having to think through all of the edge cases and the exact series of user steps when interfacing with the application. 
+
+It was also slightly challenging working with a bunch of gems I haven't had experience with, while simultaneously learning about the concepts behind - gems like `bcrypt`, `redcarpet`, as well as the `File` module which I haven't really had experience with - just understanding the objects being returned and how to interface with them in an intelligent way was challenging.
