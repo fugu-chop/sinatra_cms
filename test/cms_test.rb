@@ -5,6 +5,7 @@ ENV['RACK_ENV'] = 'test'
 require 'minitest/autorun'
 require 'rack/test'
 require 'fileutils'
+require 'bcrypt'
 require_relative '../cms'
 
 class AppTest < Minitest::Test
@@ -215,7 +216,7 @@ class AppTest < Minitest::Test
   end
 
   def test_admin_login_success
-    post '/users/login', username: ENV['USERNAME'], password: ENV['PASSWORD']
+    post '/users/login', username: ENV['USERNAME'], password: 'secret'
 
     assert_equal(302, last_response.status)
     assert_equal(session[:message], 'Welcome!')
